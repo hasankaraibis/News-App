@@ -23,12 +23,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.hasankaraibis.newsapp.data.remote.NewsItemResponse
 import com.hasankaraibis.newsapp.data.remote.NewsService
 import com.hasankaraibis.newsapp.model.NewsItem
 import com.hasankaraibis.newsapp.ui.theme.NewsAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val service = NewsService.create()
@@ -36,54 +42,65 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var news = produceState<List<NewsItemResponse>>(initialValue = emptyList(), producer = {
-                value = service.getPosts()
-            })
+//            var news = produceState<List<NewsItemResponse>>(initialValue = emptyList(), producer = {
+//                value = service.getPosts()
+//            })
 
             NewsAppTheme {
-                //  surface container using the 'background' color from the theme
+                val navController = rememberNavController()
+                NavHost(navController, startDestination = "news_detail_screen") {
+                    composable(
+                        "news_detail_screen",
+                        arguments = listOf(
+                            navArgument("newsId") {
+                                type = NavType.IntType
+                            },
+                            navArgument("newsUrl") {
+                                type = NavType.IntType
+                            }
+                        )
+                    ) {
+
+                    }
+                }
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    if (news.value.isNotEmpty()) {
-                        val items = listOf(
-                            NewsItem(
-                                R.drawable.ic_android_black_24dp,
-                                news.value[0].title,
-                                news.value[0].description
-                            ),
-                            NewsItem(
-                                R.drawable.ic_android_black_24dp,
-                                news.value[1].title,
-                                news.value[1].description
-                            ),
-                            NewsItem(
-                                R.drawable.ic_android_black_24dp,
-                                news.value[3].title,
-                                news.value[3].description
-                            ),
-                            NewsItem(
-                                R.drawable.ic_android_black_24dp,
-                                news.value[4].title,
-                                news.value[4].description
-                            ),
-                            NewsItem(
-                                R.drawable.ic_android_black_24dp,
-                                news.value[5].title,
-                                news.value[5].description
-                            ),
-                        )
-                        ItemList(items = items)
-                    }
+//                    if (news.value.isNotEmpty()) {
+//                        val items = listOf(
+//                            NewsItem(
+//                                R.drawable.ic_android_black_24dp,
+//                                news.value[0].title,
+//                                news.value[0].description
+//                            ),
+//                            NewsItem(
+//                                R.drawable.ic_android_black_24dp,
+//                                news.value[1].title,
+//                                news.value[1].description
+//                            ),
+//                            NewsItem(
+//                                R.drawable.ic_android_black_24dp,
+//                                news.value[3].title,
+//                                news.value[3].description
+//                            ),
+//                            NewsItem(
+//                                R.drawable.ic_android_black_24dp,
+//                                news.value[4].title,
+//                                news.value[4].description
+//                            ),
+//                            NewsItem(
+//                                R.drawable.ic_android_black_24dp,
+//                                news.value[5].title,
+//                                news.value[5].description
+//                            ),
+//                        )
+//                        ItemList(items = items)
+//                    }
                 }
 
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 }
 
@@ -113,14 +130,6 @@ fun ItemCard(item: NewsItem) {
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = item.description)
     }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
 }
 
 @Preview
